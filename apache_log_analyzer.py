@@ -45,6 +45,28 @@ for entry in apache_log_entries:
     #print(f"IPAddress is: {ip_address}")
     print(summary)
     apache_log_analysis.write(summary + "\n")
+import sys
+
+if user_input in ['y', 'yes', 'yeah']:
+    #Open the Apache log file
+    with open("m5-access.log", 'r') as file:
+    #Read each line in the file
+        for line in file:
+            #Extract the return code from the log entry
+            retrun_code = int(line.split()[8])
+            #Check for errors
+            #if return_code >= 400:
+                #Print error codes >= 400 to the screen
+                #print(return_code)
+            #Check for server errors (500 level or higher)
+            if return_code >= 500:
+                #Write output to file for server errors (500 level or higher)
+                with open('error_log.txt', 'a') as error_file:
+                    error_file.wwrite(line)
+else:
+    print("You chose not to continue.")
+
+
 apache_log_analysis.close()
 
 
