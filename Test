@@ -1,0 +1,70 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Opening in the log file we want to process
+    apache_log_file = open("m5-access.log", "r")
+    #Reading in the log file into one large string
+    apache_log = apache_log_file.read()
+
+    ##Splitting the entire log into individual log entries (1 per line)
+    apache_log_entries = apache_log.split('\n')
+    #print(apache_log_entries)
+    apache_log_analysis = open('apache_analysis.txt', 'w')
+    #Looping through each log entry in my list of log enteries
+    
+    
+    
+    
+    
+    
+    
+    for entry in apache_log_entries:
+        #print[entry]
+        #Grabbing the first 16 charaters of the log entry which is the IP Address
+        #ip_address = entry[0:15:1]
+
+        #Split the string to get the return code
+        apache_log_entry_items = entry.split(' ') 
+
+        #Grabbing the correct elements at the apache log entry to output IP and return code
+        ip_address = apache_log_entry_items[0]
+        return_code = apache_log_entry_items[8]
+       
+        
+        
+        
+        #Summarizing information to print to the screen and save to a file
+        summary = (f"{ip_address} - {return_code}")
+
+        if return_code >= '400':
+            print(summary)
+        if return_code >= '500':
+            apache_log_analysis.write(summary + "\n")
+
+
+
+
+    #Closing our analysis file
+    apache_log_analysis.close()
+
+else:
+    print("You chose not to continue.  Exiting the program...")
+
+
