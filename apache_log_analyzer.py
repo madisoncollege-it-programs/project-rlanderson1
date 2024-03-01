@@ -14,10 +14,10 @@ description = "Analyze an Apache web log.  We will look to see if there is anyon
 
 print(description)
 
-#Arguement statment
+#Arguement statement
 if len(sys.argv) > 1:
 #Argument list
-    user_response = sys_argv[1]
+    user_response = sys._argv[1]
 
 #Ask the user if they want to continue
 #If there isn't an argument
@@ -68,6 +68,7 @@ if user_response.lower() in acceptable_responses:
             if return_code >= '500':    
                 apache_log_analysis.write(summary + "\n")
         #Closing our analysis file
+        apache_log_file.close()
         apache_log_analysis.close()
 
 else:
