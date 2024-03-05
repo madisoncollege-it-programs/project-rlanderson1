@@ -17,7 +17,7 @@ print(description)
 #Arguement statement
 if len(sys.argv) > 1:
 #Argument list
-        user_response = sys._argv[1]
+        user_response = sys.argv[1]
 
     #Ask the user if they want to continue
  
