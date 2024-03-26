@@ -9,6 +9,16 @@ apache_log_analyzer.py
 
 import sys
 
+def ParseLogEntry(logentry):
+
+    #Split the string to get the return code
+    apache_log_entry_items = logentry.split(' ') 
+
+    #Grabbing the correct elements of the apache log entry to output IP and return code
+    ip_address = apache_log_entry_items[0]
+    return_code = apache_log_entry_items[8]
+    return [ip_address, return_code]
+
 def main():
 
     #Create a description to show to the user
@@ -60,12 +70,11 @@ def main():
             #Looping through each log entry in my list of log enteries
             for entry in apache_log_entries:    
                 #ip_address = entry[0:15:1]
-                #Split the string to get the return code
-                apache_log_entry_items = entry.split(' ') 
+                
+                item_list = ParseLogEntry(entry)
 
-                #Grabbing the correct elements of the apache log entry to output IP and return code
-                ip_address = apache_log_entry_items[0]
-                return_code = apache_log_entry_items[8]
+                ip_address = item_list[0]
+                return_code = item_list[1]
 
                 #Summerizing information to print to the screen and save to a file
                 summary = f"{ip_address} {return_code}"
