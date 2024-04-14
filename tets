@@ -1,0 +1,7 @@
+
+
+#Takes in an apache log file and creates a summary of the top 5 ip address. Return the output
+def IPAddressCount(apache_log_name):  #Arguement
+    command = f"cat {apache_log_name} | cut -d ' ' -f1 | sort -n | uniq -c | sort -n | tail -n5"  #Create a formated string w/o being hard codeded. Pythons know to use apache_log_name as it's arguement
+    result = subprocess.run(command, stdout=subprocess.PIPE, shell=True)  # pass in the command , stndout is able to access data,  and then Pythhon is going to open a diff. shell to run this process w/o make it a list
+    return result.stdout.decode()   #Decode function. Return our results witht he stdout, we are grabbing the output of the above line, decode that and the pass that back
