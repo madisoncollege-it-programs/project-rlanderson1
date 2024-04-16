@@ -4,8 +4,7 @@
 # Email:  rlanderson1@wisc.edu
 # Description:  "Analyze an Apache web log.  We will look to see if there is one trying to hack our website." 
 
-import argparse
-import sys,subprocess
+import sys,subprocess,argparse
 
 #Takes in an apache log file and creates a summary of the top 5 ip address. Return the output
 def IPAddressCount(apache_log_file_name):  #Arguement
@@ -25,40 +24,35 @@ def ParseLogEntry(logentry):
     return [ip_address, return_code]
 
 def main():
-    #Create argument parser     
+   
     #Create a description to show to the user
     parser = argparse.ArgumentParser(description="Analyze an Apache web log.")
-    parser.add_argument('-f', '--filename', type=str, required=True, help="Path to the Apache log file")
+    
+    
+    #Creating a new argument to pass in an apache log file name
+    parser.add_argument('-f', '--filename', type=str, required=True, help="Enter an Apache File Name to process")
+        
+    #Grabbing a description to show the user
     args = parser.parse_args()
    
-       #print(description)
 
-    #Arguement statement
-    #if len(sys.argv) > 1:
-        #Argument list
-        #user_response = sys.argv[1]
-    #Ask the user if they want to continue
-   # else:
-        #user_response = input("Would you like to continue?  (y or n)")
+    #Create a description to show to the user
+    description = "Analyze an Apache web log.  We will look to see if there is anyone trying to hack our website."
 
-   # acceptable_responses = ['y','yes', 'yeah']
+    print(description)   
 
-   # if user_response.lower() in acceptable_responses:
-        
     #Calling a function to get the summary information of our apache log file
     results = IPAddressCount(args.filename)
 
-        #Open a new file to output our analysis
-    with open('apache_analysis.txt', 'w') as apache_log_analysis:
-        apache_log_analysis.write(results)
-        print(results)
-
-        #Closing our analysis file
-       # apache_log_analysis.close()
+    #Open a new file to output our analysis
+    apache_log_analysis = open('apache_analysis.txt', 'w')
     
-    #else:
-       # print("You chose not to continue.  Exiting the program...")
+    apache_log_analysis.write(results)
+    print(results)
 
+    #Closing our analysis file
+    apache_log_analysis.close()
+    
 if __name__ == "__main__":
     main()
 
