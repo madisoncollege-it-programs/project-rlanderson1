@@ -4,7 +4,29 @@
 # Email:  rlanderson1@wisc.edu
 # Description:  "Analyze an Apache web log.  We will look to see if there is one trying to hack our website." 
 
-import sys,subprocess,argparse
+from bs4 import BeautifulSoup
+
+#Create a BeautifulSoup object to parse the HTML response
+soup +BeautifulSoup(lookup_response, 'html.parser')
+
+#Find the element containing information about the owner the owner of the IP address
+owner_info = soup.find('div', class_='ip-info-item')
+
+#Print the owner information
+print("Owner Infromation:")
+print(owner_info.get_text(strip=True))
+
+import sys,subprocess,argparse,request
+
+def IP(IPAddress):
+
+    url = f"https://tools.keycdn.com/geo?host={IPAdress}"
+    print("URL:", url) #Print the URL for verification
+    response = requests.get(url)
+    return response.text
+
+#Call IPLookup function in main
+lookup_response = IPLookup(top_ip)
 
 #Takes in an apache log file and creates a summary of the top 5 ip address. Return the output
 def IPAddressCount(apache_log_file_name):  #Arguement
@@ -43,6 +65,13 @@ def main():
 
     #Calling a function to get the summary information of our apache log file
     results = IPAddressCount(args.filename)
+    top_ip_line = resultl.split('\n')[-2] # Get the second last lijne which contains the IP with the most request 
+    top_ip = top_ip_line.split()[-1] # Get the last element from the splite line which is the IP address
+    print("IP address with the most requests:", top_ip)
+ 
+    #Print the first 250 characters of the response
+    print("Response from IP Lookup:")
+    print(lookup_response[:250])
 
     #Open a new file to output our analysis
     apache_log_analysis = open('apache_analysis.txt', 'w')
