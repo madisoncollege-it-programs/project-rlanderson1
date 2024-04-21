@@ -4,6 +4,7 @@
 # Email:  rlanderson1@wisc.edu
 # Description:  "Analyze an Apache web log.  We will look to see if there is anyone trying to hack our website"
 
+import argparse
 import sys,subprocess
 
 #Takes in an apache log file and creates a summary of the top 5 ip address. Return the output
