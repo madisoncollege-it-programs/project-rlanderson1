@@ -4,17 +4,17 @@
 # Email:  rlanderson1@wisc.edu
 # Description:  "Analyze an Apache web log.  We will look to see if there is one trying to hack our website." 
 
-import sys,subprocess,argparse,requests,bs4
+import sys,subprocess,argparse,requests,json
 
 #Function to call a website to get more information about an IP address
 def IPLookup(ip_address):
 
     #URL to call to lookup IP
-    url = f"https://tools.keycdn.com/geo?host={ip_address}"
+    url = f"http://ipinfo.io/{ip_address}/json"  #API formate
     print(url) #Print the URL for verification
     
     #Make a requests to the specified URL
-    response = requests.get(url,headers={"user-agent": "curl/8.3.0"})
+    response = requests.get(url)
     return response.text
 
 #Takes in an apache log file and creates a summary of the top 5 ip address. Return the output
@@ -48,29 +48,31 @@ def main():
     
     #Create a description to show to the user
     description = "Analyze an Apache web log.  We will look to see if there is anyone trying to hack our website."
-
     print(description)   
-
 
     #Calling a fuction to get the summary information of our apache logfile
     results = IPAddressCount(args.filename)
     
     #Paring out the ip address that is hittin our website the most
     highest_line = results.split('\n')[-2]
-    #print(highest_line)
     highest_ip = highest_line.split()[1]
     print(highest_ip)
+    
 
     result = IPLookup(highest_ip)
-    print(result [:250]) ##Print the first 250 characters of the response
+    #print(result[:250]) ##Print the first 250 characters of the response
 
-    myHTML = bs4.BeautifulSoup(result, features="html.parser") #Pass in only HTML, no other formate
+    #Take the resulting webpage and turn it into a dictionary and print info
+    ip_info = json.loads(result)
+    print(f"... IP City: {ip_info['city']}")
+    print(f"... IP ORG: {ip_info['org']}")
 
-    print(myHTML.find_all("dd", class_="col-8 text-monospace")[1].text) #Chrome, tools, developer tools, click on upper left icon which allows you to select anyhting on the page, click on work and it shows exactly in the HTML script it is
+    #myHTML = bs4.BeautifulSoup(result, features="html.parser") #Pass in only HTML, no other formate
+
+    #print(myHTML.find_all("dd", class_="col-8 text-monospace")[1].text) #Chrome, tools, developer tools, click on upper left icon which allows you to select anyhting on the page, click on work and it shows exactly in the HTML script it is
 
     #Open a new file to output our analysis
     apache_log_analysis = open('apache_analysis.txt', 'w')
-    
     apache_log_analysis.write(results)
     #print(results)
 

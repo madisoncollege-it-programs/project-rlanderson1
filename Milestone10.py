@@ -62,7 +62,7 @@ def main():
     print(highest_ip)
 
     result = IPLookup(highest_ip)
-    print(result [:250]) ##Print the first 250 characters of the response
+    print(result[:250]) ##Print the first 250 characters of the response
 
     myHTML = bs4.BeautifulSoup(result, features="html.parser") #Pass in only HTML, no other formate
 
