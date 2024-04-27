@@ -23,6 +23,26 @@ def IPAddressCount(apache_log_file_name):  #Arguement
     result = subprocess.run(command, stdout=subprocess.PIPE, shell=True)  # pass in the command , stndout is able to access data,  and then Pythhon is going to open a diff. shell to run this process w/o make it a list
     return result.stdout.decode()   #Decode function. Return our results witht he stdout, we are grabbing the output of the above line, decode that and the pass that back
 
+# create a new function to use requests module, it takes single argument
+def IPLookup(ip_address):
+    # Print the Response from the Function
+    # open the .credentials-vt file , and get the value of your api-key
+    with open(".credentials-vt",'r') as file:
+        api_key = file.readline().strip()
+        # split the line by = to get the value of the variable
+        api_key = api_key.split("=")[1]
+
+    # dictionary with a key of ‘x-apikey’ and a value of your api key from Virus Total
+    headerVariable = {
+        'x-apikey':api_key
+    }
+    print(f"https://virustotal.com/api/v3/ip_addressses/{ip_address}")    
+    # Capture the  http response , and return that response it text manner
+    # Add the header argument to your url request.
+    returned_data = requests.get(f"https://virustotal.com/api/v3/ip_addresses/{ip_address}",headers=headerVariable).text
+    return returned_data
+
+
 #Function that takes in an individual log entry and parses (set up to include any arguments that we end up adding to this script)
 def ParseLogEntry(logentry):
 
@@ -64,8 +84,8 @@ def main():
 
     #Take the resulting webpage and turn it into a dictionary and print info
     ip_info = json.loads(result)
-    print(f"... IP City: {ip_info['city']}")
-    print(f"... IP ORG: {ip_info['org']}")
+    #print(f"... IP City: {ip_info['city']}")
+    #print(f"... IP ORG: {ip_info['org']}")
 
     #myHTML = bs4.BeautifulSoup(result, features="html.parser") #Pass in only HTML, no other formate
 
