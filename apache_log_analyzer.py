@@ -4,17 +4,24 @@
 # Email:  rlanderson1@wisc.edu
 # Description:  "Analyze an Apache web log.  We will look to see if there is one trying to hack our website." 
 
-import sys,subprocess,argparse,requests,json
+import subprocess,argparse,requests,json
 
 #Function to call a website to get more information about an IP address
 def IPLookup(ip_address):
 
     #URL to call to lookup IP
-    url = f"http://ipinfo.io/{ip_address}/json"  #API formate
+    url = f"https://virustotal.com/api/v3/ip_addresses/{ip_address}"  #API formate
     print(url) #Print the URL for verification
+
+    credfile = open('/home/student/.credentials-vt', 'r')
+    credentials = credfile.readlines()
+    api_key = credentials[0].split('=')[1].strip()
+
+    header = {}
+    header['x-apikey'] = api_key
     
     #Make a requests to the specified URL
-    response = requests.get(url)
+    response = requests.get(url,headers=header)
     return response.text
 
 #Takes in an apache log file and creates a summary of the top 5 ip address. Return the output
@@ -22,26 +29,6 @@ def IPAddressCount(apache_log_file_name):  #Arguement
     command = f"cat {apache_log_file_name} | cut -d ' ' -f1 | sort -n | uniq -c | sort -n | tail -n5"  #Create a formated string w/o being hard codeded. Pythons know to use apache_log_name as it's arguement
     result = subprocess.run(command, stdout=subprocess.PIPE, shell=True)  # pass in the command , stndout is able to access data,  and then Pythhon is going to open a diff. shell to run this process w/o make it a list
     return result.stdout.decode()   #Decode function. Return our results witht he stdout, we are grabbing the output of the above line, decode that and the pass that back
-
-# create a new function to use requests module, it takes single argument
-def IPLookup(ip_address):
-    # Print the Response from the Function
-    # open the .credentials-vt file , and get the value of your api-key
-    with open(".credentials-vt",'r') as file:
-        api_key = file.readline().strip()
-        # split the line by = to get the value of the variable
-        api_key = api_key.split("=")[1]
-
-    # dictionary with a key of ‘x-apikey’ and a value of your api key from Virus Total
-    headerVariable = {
-        'x-apikey':api_key
-    }
-    print(f"https://virustotal.com/api/v3/ip_addressses/{ip_address}")    
-    # Capture the  http response , and return that response it text manner
-    # Add the header argument to your url request.
-    returned_data = requests.get(f"https://virustotal.com/api/v3/ip_addresses/{ip_address}",headers=headerVariable).text
-    return returned_data
-
 
 #Function that takes in an individual log entry and parses (set up to include any arguments that we end up adding to this script)
 def ParseLogEntry(logentry):
@@ -78,7 +65,6 @@ def main():
     highest_ip = highest_line.split()[1]
     print(highest_ip)
     
-
     result = IPLookup(highest_ip)
     #print(result[:250]) ##Print the first 250 characters of the response
 
@@ -86,9 +72,9 @@ def main():
     ip_info = json.loads(result)
     #print(f"... IP City: {ip_info['city']}")
     #print(f"... IP ORG: {ip_info['org']}")
+    print(json.dumps(ip_info,indent=4))
 
     #myHTML = bs4.BeautifulSoup(result, features="html.parser") #Pass in only HTML, no other formate
-
     #print(myHTML.find_all("dd", class_="col-8 text-monospace")[1].text) #Chrome, tools, developer tools, click on upper left icon which allows you to select anyhting on the page, click on work and it shows exactly in the HTML script it is
 
     #Open a new file to output our analysis
