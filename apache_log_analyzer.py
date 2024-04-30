@@ -17,6 +17,8 @@ def IPLookup(ip_address):
     credentials = credfile.readlines()
     api_key = credentials[0].split('=')[1].strip()
 
+    print(f"API Key: {api_key}")
+
     header = {}
     header['x-apikey'] = api_key
     
@@ -43,50 +45,45 @@ def ParseLogEntry(logentry):
 
 def main():
    
-    #Create a description to show to the user
-    parser = argparse.ArgumentParser(description="A new parser for our script")  #Intake a file name
-    
-    #Creating a new argument to pass in an apache log file name (argument=filename, type=string-the default for agrument is string, help=value-value is required at the command line, )
-    parser.add_argument('-f', '--filename', required=True,type=str, help="Enter an Apache File Name to process")  #bring in the filename that will be processed
-        
-    #Grabbing the agrument the user entered (parse arg=function call- allows the help menue to be established, the arg will allow the file from above,)
+    # Create a description to show to the user
+    parser = argparse.ArgumentParser(description="Analyze an Apache web log.")
+   
+    # Creating a new argument to pass in an Apache log file name
+    parser.add_argument('-f', '--filename', required=True, type=str, help="Enter an Apache File Name to process")
+   
+    # Grabbing the argument the user entered
     args = parser.parse_args()
    
-    
-    #Create a description to show to the user
+    # Create a description to show to the user
     description = "Analyze an Apache web log.  We will look to see if there is anyone trying to hack our website."
-    print(description)   
-
-    #Calling a fuction to get the summary information of our apache logfile
+    print(description)
+   
+    # Calling a function to get the summary information of our Apache logfile
     results = IPAddressCount(args.filename)
-    
-    #Paring out the ip address that is hittin our website the most
+   
+    # Paring out the IP address that is hitting our website the most
     highest_line = results.split('\n')[-2]
     highest_ip = highest_line.split()[1]
-    print(highest_ip)
-    
+    print("IP Address with most hits:", highest_ip)
+   
     result = IPLookup(highest_ip)
-    #print(result[:250]) ##Print the first 250 characters of the response
-
-    #Take the resulting webpage and turn it into a dictionary and print info
     ip_info = json.loads(result)
-    #print(f"... IP City: {ip_info['city']}")
-    #print(f"... IP ORG: {ip_info['org']}")
-    print(json.dumps(ip_info,indent=4))
+   
+    # Print only the information relevant to BitDefender category
+    bitdefender_category = ip_info.get('data', {}).get('attributes', {}).get('last_analysis_results', {}).get('BitDefender', {}).get('category')
 
-    #myHTML = bs4.BeautifulSoup(result, features="html.parser") #Pass in only HTML, no other formate
-    #print(myHTML.find_all("dd", class_="col-8 text-monospace")[1].text) #Chrome, tools, developer tools, click on upper left icon which allows you to select anyhting on the page, click on work and it shows exactly in the HTML script it is
+    if bitdefender_category:
+        print("BitDefender Category:", bitdefender_category)
+    else:
+        print("BitDefender Category not found")
+   
+    # Open a new file to output our analysis
+    with open('apache_analysis.txt', 'w') as apache_log_analysis:
+        apache_log_analysis.write(results)
 
-    #Open a new file to output our analysis
-    apache_log_analysis = open('apache_analysis.txt', 'w')
-    apache_log_analysis.write(results)
-    #print(results)
-
-    #Closing our analysis file
-    apache_log_analysis.close()
-    
-if __name__ == "__main__":  #Excute the main function-only function being used
+if __name__ == "__main__":
     main()
+
 
 
    
